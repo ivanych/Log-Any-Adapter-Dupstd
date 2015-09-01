@@ -1,51 +1,22 @@
-Log-Any-Adapter-Dupstd
+Log-Any-For-Std
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+Log::Any provides convenient API for logging of messages. But to ensure
+recording of a message into the log you have to evidently call out one of the
+logging methods, e.g $log->info('some message').
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+At the same time it is often needed in programs to log a message which you
+evidently didn't output. For example it may be a message output by the
+interpreter STDERR as a result of an error.
 
-
-INSTALLATION
-
-To install this module, run the following commands:
-
-	perl Makefile.PL
-	make
-	make test
-	make install
-
-SUPPORT AND DOCUMENTATION
-
-After installing, you can find documentation for this module with the
-perldoc command.
-
-    perldoc Log::Any::Adapter::Duperr
-
-You can also look for information at:
-
-    RT, CPAN's request tracker (report bugs here)
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Log-Any-Adapter-Dupstd
-
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Log-Any-Adapter-Dupstd
-
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Log-Any-Adapter-Dupstd
-
-    Search CPAN
-        http://search.cpan.org/dist/Log-Any-Adapter-Dupstd/
-
+The module Log::Any::For::Std  logs your messages for you. You can just
+write in your application 'use Log::Any::For::Std'; and all the standard error
+messages will start logging magically.
 
 LICENSE AND COPYRIGHT
 
-Copyright (C) 2015 MIkhail Ivanov
+Copyright (C) 2015 Mikhail Ivanov
 
-This program is released under the following license: perl_5
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
+See L<http://dev.perl.org/licenses/> for more information.
