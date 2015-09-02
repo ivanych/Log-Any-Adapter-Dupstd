@@ -1,16 +1,10 @@
-Log-Any-For-Std
+Log-Any-Adapter-Dupstd
 
-Log::Any provides convenient API for logging of messages. But to ensure
-recording of a message into the log you have to evidently call out one of the
-logging methods, e.g $log->info('some message').
+Адаптеры Dupstd предназначены для логирования сообщений в дубликаты стандартных дескрипторов STDERR и STDOUT.
 
-At the same time it is often needed in programs to log a message which you
-evidently didn't output. For example it may be a message output by the
-interpreter STDERR as a result of an error.
-
-The module Log::Any::For::Std  logs your messages for you. You can just
-write in your application 'use Log::Any::For::Std'; and all the standard error
-messages will start logging magically.
+Логирование в дубликат стандартного дескриптора может понадобиться в особых случях,
+когда вам требуется переопределить или даже закрыть стандартный дескриптор,
+но при этом вы хотите продолжать выводить сообщения туда, куда они выводились бы стандартным дескриптором.
 
 LICENSE AND COPYRIGHT
 
@@ -19,4 +13,4 @@ Copyright (C) 2015 Mikhail Ivanov
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
-See L<http://dev.perl.org/licenses/> for more information.
+See http://dev.perl.org/licenses for more information.
