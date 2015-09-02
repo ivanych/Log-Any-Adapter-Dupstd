@@ -1,107 +1,142 @@
 package Log::Any::Adapter::Dupstd;
 
-use 5.006;
+#
+# Cunning adapter for logging to a duplicate of STDERR or STDOUT
+#
+
+use 5.008001;
 use strict;
 use warnings;
+use utf8::all;
+
+our $VERSION = '0.01';
+
+#---
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
-Log::Any::Adapter::Dupstd - The great new Log::Any::Adapter::Dupstd!
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
-our $VERSION = '0.01';
+Log::Any::Adapter::Dupstd - Cunning adapter for logging to a duplicate of STDERR or STDOUT
 
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+    # Log to a duplicate of stderr or stdout
 
-Perhaps a little code snippet.
+    use Log::Any::Adapter ('Duperr');
+    use Log::Any::Adapter ('Dupout');
 
-    use Log::Any::Adapter::Dupstd;
+    # or
 
-    my $foo = Log::Any::Adapter::Dupstd->new();
+    use Log::Any::Adapter;
     ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 function1
-
-=cut
-
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
-
-=head1 AUTHOR
-
-MIkhail Ivanov, C<< <m.ivanych at gmail.com> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-log-any-adapter-dupstd at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Log-Any-Adapter-Dupstd>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+    Log::Any::Adapter->set('Duperr');
+    Log::Any::Adapter->set('Dupout');
+     
+    # with minimum level 'warn'
+     
+    use Log::Any::Adapter ('Duperr', log_level => 'warn' );
+    use Log::Any::Adapter ('Dupout', log_level => 'warn' );
 
 
+=head1 DESCRIPTION
+
+Адаптеры Dupstd предназначены для логирования сообщений в дубликаты стандартных дескрипторов STDERR и STDOUT.
+
+Логирование в дубликат стандартного дескриптора может понадобиться в особых случях,
+когда вам требуется переопределить или даже закрыть стандартный дескриптор,
+но при этом вы хотите продолжать выводить сообщения туда, куда они выводились бы стандартным дескриптором.
+
+Например, ваш скрипт печатает что-то в STDERR, а вы хотите перенаправить это сообщение в файл.
+Если вы перенаправите STDERR в файл, то вы заодно перенаправите туда же предупреждения warn и даже исключения die.
+Но это не всегда удобно. Во многих случаях удобнее, когда предупреждения и исключения выводятся на экран.
+
+    # Перенаправить STDERR в файл
+    open(STDERR, '>', 'stderr.txt');
+
+    # Это сообщение уйдет в файл, а не на экран (вы этого хотите)
+    print STDERR 'Some message';
+    
+    # Это предупреждение тоже уйдет в файл (а вот этого вы не хотите)
+    warn('Warning!');
+
+Вы можете попробовать вывести предупреждение или исключение на экран самостоятельно, с помощью адаптера Stderr из дистрибутива Log::Any.
+Но адаптер Stderr печатает сообщение на STDERR, поэтому сообщение все-равно окажется в файле, а не на экране.
+
+    # Перенаправить STDERR в файл
+    open(STDERR, '>', 'stderr.txt')
+
+    # Это сообщение уйдет в файл, а не на экран (вы этого хотите)
+    print STDERR 'Some message';
+
+    # Адаптер Stderr
+    Log::Any::Adapter->set('Stderr');
+
+    # Упс, предупреждение уйдет в файл (опять не то, чего ожидали)
+    $log->warning('Warning!')
+
+Вы можете вывести предупреждение на экран с помощью адаптера Stdout, который также входит в дистрибутив Log::Any.
+Предупреждение будет выведено на экран, как и ожидалось, но это будет "не настоящее" предупреждение, потому что оно будет выведено через STDOUT.
+Такое "предупреждение" нельзя будет отфильтровать в шелле.
+
+    # Это не будет работать!
+    $ script.pl 2> error.log
+
+Вот в такой ситуации и нужны адаптеры Dupstd. Предупреждения и исключения, отправленные с помощью этих адаптеров, будут "настоящими".
+Их можно будет отфильтровать в шелле, точно также, как если бы они были отправлены на обычный STDERR.
+
+    # Перенаправить STDERR в файл
+    open(STDERR, '>', 'stderr.txt')
+
+    # Это сообщение уйдет в файл, а не на экран (вы этого хотите)
+    print STDERR 'Some message';
+
+    # Адаптер Duperr
+    Log::Any::Adapter->set('Duperr');
+
+    # Предупреждение будут выведено на экран (то, что нужно)
+    $log->warning('Warning!')
 
 
-=head1 SUPPORT
+=head1 ADAPTERS
 
-You can find documentation for this module with the perldoc command.
+В этом дистрибутиве находятся два хитрых адаптера - Duperr and Dupout.
 
-    perldoc Log::Any::Adapter::Dupstd
+Эти адаптеры работают аналогично простым адаптерам из дистрибутива Log::Any - 
+Stderr and Stdout (за исключением того, что внутри используются дубли дескрипторов).
 
 
-You can also look for information at:
+=head1 SEE ALSO
+
+L<Log::Any|Log::Any>, L<Log::Any::Adapter|Log::Any::Adapter>, L<Log::Any::For::Std|Log::Any::For::Std>
+
+=head1 AUTHORS
 
 =over 4
 
-=item * RT: CPAN's request tracker (report bugs here)
+=item *
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Log-Any-Adapter-Dupstd>
+Mikhail Ivanov <m.ivanych@gmail.com>
 
-=item * AnnoCPAN: Annotated CPAN documentation
+=item *
 
-L<http://annocpan.org/dist/Log-Any-Adapter-Dupstd>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Log-Any-Adapter-Dupstd>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Log-Any-Adapter-Dupstd/>
+Anastasia Zherebtsova <zherebtsova@gmail.com> - translation of documentation
+into English
 
 =back
 
+=head1 COPYRIGHT AND LICENSE
 
-=head1 ACKNOWLEDGEMENTS
+This software is copyright (c) 2015 by Mikhail Ivanov.
 
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2015 MIkhail Ivanov.
-
-This program is released under the following license: perl_5
-
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-1; # End of Log::Any::Adapter::Dupstd

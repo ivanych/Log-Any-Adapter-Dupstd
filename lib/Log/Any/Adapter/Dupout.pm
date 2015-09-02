@@ -1,107 +1,128 @@
 package Log::Any::Adapter::Dupout;
 
-use 5.006;
+#
+# Cunning adapter for logging to a duplicate of STDOUT
+#
+
+use 5.008001;
 use strict;
 use warnings;
+use utf8::all;
+
+use Log::Any::Adapter::Util ();
+
+use base qw/Log::Any::Adapter::Base/;
+
+our $VERSION = '0.01';
+
+#---
+
+# Duplicate STDOUT
+open( my $dupout, '>&', STDOUT ) or die "Can't dup STDOUT: $!";
+
+sub init {
+    my ($self) = @_;
+
+    if ( exists $self->{log_level} ) {
+        $self->{log_level} = Log::Any::Adapter::Util::numeric_level( $self->{log_level} )
+            unless $self->{log_level} =~ /^\d+$/;
+    }
+    else {
+        $self->{log_level} = Log::Any::Adapter::Util::numeric_level('trace');
+    }
+}
+
+foreach my $method ( Log::Any::Adapter::Util::logging_methods() ) {
+    no strict 'refs';    ## no critic (ProhibitNoStrict)
+
+    my $method_level = Log::Any::Adapter::Util::numeric_level($method);
+
+    *{$method} = sub {
+        my ( $self, $text ) = @_;
+
+        return if $method_level > $self->{log_level};
+
+        # Message output on $dupout instead of STDOUT
+        print $dupout "$text\n";
+    };
+}
+
+foreach my $method ( Log::Any::Adapter::Util::detection_methods() ) {
+    no strict 'refs';    ## no critic (ProhibitNoStrict)
+
+    my $base = substr( $method, 3 );
+
+    my $method_level = Log::Any::Adapter::Util::numeric_level($base);
+
+    *{$method} = sub {
+        return !!( $method_level <= $_[0]->{log_level} );
+    };
+}
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
 
 =head1 NAME
 
-Log::Any::Adapter::Dupout - The great new Log::Any::Adapter::Dupout!
-
-=head1 VERSION
-
-Version 0.01
-
-=cut
-
-our $VERSION = '0.01';
+Log::Any::Adapter::Dupout - Cunning adapter for logging to a duplicate of STDOUT
 
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+    use Log::Any::Adapter ('Dupout');
 
-Perhaps a little code snippet.
+    # or
 
-    use Log::Any::Adapter::Dupout;
-
-    my $foo = Log::Any::Adapter::Dupout->new();
+    use Log::Any::Adapter;
     ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
-
-=head1 SUBROUTINES/METHODS
-
-=head2 function1
-
-=cut
-
-sub function1 {
-}
-
-=head2 function2
-
-=cut
-
-sub function2 {
-}
-
-=head1 AUTHOR
-
-MIkhail Ivanov, C<< <m.ivanych at gmail.com> >>
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-log-any-adapter-dupstd at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Log-Any-Adapter-Dupstd>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+    Log::Any::Adapter->set('Dupout');
+     
+    # with minimum level 'warn'
+     
+    use Log::Any::Adapter ('Dupout', log_level => 'warn' );
 
 
+=head1 DESCRIPTION
+
+Адаптер Dupout предназначен для логирования сообщений в дубликат стандартного дескриптора STDOUT.
+
+Логирование в дубликат стандартного дескриптора может понадобиться в особых случях,
+когда вам требуется переопределить или даже закрыть стандартный дескриптор,
+но при этом вы хотите продолжать выводить сообщения туда, куда они выводились бы стандартным дескриптором. Подробнее см. Dupstd.
+
+Этот адаптер работает аналогично простому адаптеру из дистрибутива Log::Any - 
+Stdout (за исключением того, что внутри используется дубль дескриптора).
 
 
-=head1 SUPPORT
+=head1 SEE ALSO
 
-You can find documentation for this module with the perldoc command.
+L<Log::Any|Log::Any>, L<Log::Any::Adapter|Log::Any::Adapter>, L<Log::Any::For::Std|Log::Any::For::Std>
 
-    perldoc Log::Any::Adapter::Dupout
-
-
-You can also look for information at:
+=head1 AUTHORS
 
 =over 4
 
-=item * RT: CPAN's request tracker (report bugs here)
+=item *
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Log-Any-Adapter-Dupstd>
+Mikhail Ivanov <m.ivanych@gmail.com>
 
-=item * AnnoCPAN: Annotated CPAN documentation
+=item *
 
-L<http://annocpan.org/dist/Log-Any-Adapter-Dupstd>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Log-Any-Adapter-Dupstd>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Log-Any-Adapter-Dupstd/>
+Anastasia Zherebtsova <zherebtsova@gmail.com> - translation of documentation
+into English
 
 =back
 
+=head1 COPYRIGHT AND LICENSE
 
-=head1 ACKNOWLEDGEMENTS
+This software is copyright (c) 2015 by Mikhail Ivanov.
 
-
-=head1 LICENSE AND COPYRIGHT
-
-Copyright 2015 MIkhail Ivanov.
-
-This program is released under the following license: perl_5
-
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-1; # End of Log::Any::Adapter::Dupout
