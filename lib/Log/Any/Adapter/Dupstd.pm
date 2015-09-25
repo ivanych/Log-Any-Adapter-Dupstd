@@ -1,7 +1,7 @@
 package Log::Any::Adapter::Dupstd;
 
 #
-# Cunning adapter for logging to a duplicate of STDERR or STDOUT
+# Cunning adapter for logging to a duplicate of STDOUT or STDERR
 #
 
 use 5.008001;
@@ -23,94 +23,114 @@ __END__
 
 =head1 NAME
 
-Log::Any::Adapter::Dupstd - Cunning adapter for logging to a duplicate of STDERR or STDOUT
+Log::Any::Adapter::Dupstd - Cunning adapter for logging to a duplicate of
+STDOUT or STDERR
 
 
 =head1 SYNOPSIS
 
-    # Log to a duplicate of stderr or stdout
+    # Log to a duplicate of stdout or stderr
 
-    use Log::Any::Adapter ('Duperr');
     use Log::Any::Adapter ('Dupout');
+    use Log::Any::Adapter ('Duperr');
 
     # or
 
     use Log::Any::Adapter;
     ...
-    Log::Any::Adapter->set('Duperr');
     Log::Any::Adapter->set('Dupout');
+    Log::Any::Adapter->set('Duperr');
      
     # with minimum level 'warn'
      
-    use Log::Any::Adapter ('Duperr', log_level => 'warn' );
     use Log::Any::Adapter ('Dupout', log_level => 'warn' );
+    use Log::Any::Adapter ('Duperr', log_level => 'warn' );
+
+    # and later
+
+    open(STDOUT, ">/dev/null");
+    open(STDERR, ">/dev/null");
 
 
 =head1 DESCRIPTION
 
-Адаптеры Dupstd предназначены для логирования сообщений в дубликаты стандартных дескрипторов STDERR и STDOUT.
+Adapters Dupstd are intended to log messages into duplicates of standard
+descriptors STDOUT and STDERR.
 
-Логирование в дубликат стандартного дескриптора может понадобиться в особых случях,
-когда вам требуется переопределить или даже закрыть стандартный дескриптор,
-но при этом вы хотите продолжать выводить сообщения туда, куда они выводились бы стандартным дескриптором.
+Logging into a duplicate of standard descriptor might be needed in special
+occasions when you need to redefine or even close standard descriptor but you
+want to continue displaying messages wherever they are displayed by a standard
+descriptor. 
 
-Например, ваш скрипт печатает что-то в STDERR, а вы хотите перенаправить это сообщение в файл.
-Если вы перенаправите STDERR в файл, то вы заодно перенаправите туда же предупреждения warn и даже исключения die.
-Но это не всегда удобно. Во многих случаях удобнее, когда предупреждения и исключения выводятся на экран.
+For instance, your script types something in STDERR, and you want to redirect
+that message into a file. If you redirect STDERR into a file, warnings C<warn>
+and even exceptions C<die> will be redirected there as well. But that is not
+always convenient. In many cases it is more convenient to display warnings and
+exceptions on the screen.
 
-    # Перенаправить STDERR в файл
+    # Redirect STDERR into a file
     open(STDERR, '>', 'stderr.txt');
 
-    # Это сообщение уйдет в файл, а не на экран (вы этого хотите)
+    # This message will go to the file, not on the screen (you want this)
     print STDERR 'Some message';
-    
-    # Это предупреждение тоже уйдет в файл (а вот этого вы не хотите)
+
+    # This warning will go to the file too (and that is what you don't want)
     warn('Warning!');
 
-Вы можете попробовать вывести предупреждение или исключение на экран самостоятельно, с помощью адаптера Stderr из дистрибутива Log::Any.
-Но адаптер Stderr печатает сообщение на STDERR, поэтому сообщение все-равно окажется в файле, а не на экране.
+You can try to display warning or exception on the screen by yourself using
+adapter Stderr from the distributive Log::Any. But adapter Stderr types message
+on STDERR so the message will anyway be in the file and not on the screen.
 
-    # Перенаправить STDERR в файл
+    # Adapter Stderr
+    use Log::Any::Adapter ('Stderr');
+
+    # Redirect STDERR into a file
     open(STDERR, '>', 'stderr.txt')
 
-    # Это сообщение уйдет в файл, а не на экран (вы этого хотите)
+    # This message will go to the file, not on the screen (you want this)
     print STDERR 'Some message';
 
-    # Адаптер Stderr
-    Log::Any::Adapter->set('Stderr');
-
-    # Упс, предупреждение уйдет в файл (опять не то, чего ожидали)
+    # Oops, warning will go to the file (again it's not what you expected)
     $log->warning('Warning!')
 
-Вы можете вывести предупреждение на экран с помощью адаптера Stdout, который также входит в дистрибутив Log::Any.
-Предупреждение будет выведено на экран, как и ожидалось, но это будет "не настоящее" предупреждение, потому что оно будет выведено через STDOUT.
-Такое "предупреждение" нельзя будет отфильтровать в шелле.
+You can display message on the screen using adapter Stdout, which is also in the
+distributive Log::Any. Warning will be displayed on the screen as expected, but
+that will be "not real" warning because it will be displayed through STDOUT.
+That warning will be impossible to filter in the shell.
 
-    # Это не будет работать!
+    # That won't be working!
     $ script.pl 2> error.log
 
-Вот в такой ситуации и нужны адаптеры Dupstd. Предупреждения и исключения, отправленные с помощью этих адаптеров, будут "настоящими".
-Их можно будет отфильтровать в шелле, точно также, как если бы они были отправлены на обычный STDERR.
+That is the situation when you need adapter Dupstd. Warnings and exceptions sent
+using these adapters will be "real". They can be filtered in the shell just as
+if they would have been sent to usual STDERR. 
 
-    # Перенаправить STDERR в файл
+    # Adapter Duperr (definitely PRIOR TO redirecting STDERR)
+    use Log::Any::Adapter ('Duperr');
+
+    # Redirect STDERR into a file
     open(STDERR, '>', 'stderr.txt')
 
-    # Это сообщение уйдет в файл, а не на экран (вы этого хотите)
+    # This message will go to the file, not on the screen (you want this)
     print STDERR 'Some message';
 
-    # Адаптер Duperr
-    Log::Any::Adapter->set('Duperr');
-
-    # Предупреждение будут выведено на экран (то, что нужно)
+    # Warning will be displayed on the screen (that is what you want)
     $log->warning('Warning!')
+
+
+=head1 ATTENTION
+
+Adapters Dupstd must be initialized prior to standard descriptors being redefined or closed.
+
+Standard descriptor can't be reopened, that's why the duplicate must be made in advance.
 
 
 =head1 ADAPTERS
 
-В этом дистрибутиве находятся два хитрых адаптера - Duperr and Dupout.
+In this distributive there are two cunning adapters - Dupout and Duperr.
 
-Эти адаптеры работают аналогично простым адаптерам из дистрибутива Log::Any - 
-Stderr and Stdout (за исключением того, что внутри используются дубли дескрипторов).
+These adapters work similarly to ordinary adapters from distributive Log::Any - 
+L<Stdout|Log::Any::Adapter::Stdout> and L<Stderr|Log::Any::Adapter::Stderr> (save that inside are used descriptors duplicates).
 
 
 =head1 SEE ALSO

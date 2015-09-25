@@ -1,10 +1,12 @@
 Log-Any-Adapter-Dupstd
 
-Адаптеры Dupstd предназначены для логирования сообщений в дубликаты стандартных дескрипторов STDERR и STDOUT.
+Adapters Dupstd are intended to log messages into duplicates of standard
+descriptors STDOUT and STDERR.
 
-Логирование в дубликат стандартного дескриптора может понадобиться в особых случях,
-когда вам требуется переопределить или даже закрыть стандартный дескриптор,
-но при этом вы хотите продолжать выводить сообщения туда, куда они выводились бы стандартным дескриптором.
+Logging into a duplicate of standard descriptor might be needed in special
+occasions when you need to redefine or even close standard descriptor but you
+want to continue displaying messages wherever they are displayed by a standard
+descriptor. 
 
 LICENSE AND COPYRIGHT
 
