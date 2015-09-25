@@ -86,17 +86,24 @@ Log::Any::Adapter::Dupout - Cunning adapter for logging to a duplicate of STDOUT
      
     use Log::Any::Adapter ('Dupout', log_level => 'warn' );
 
+    # and later
+
+    open(STDOUT, ">/dev/null");
+
 
 =head1 DESCRIPTION
 
-Адаптер Dupout предназначен для логирования сообщений в дубликат стандартного дескриптора STDOUT.
+Adapter Dupout are intended to log messages into duplicate of standard
+descriptor STDOUT.
 
-Логирование в дубликат стандартного дескриптора может понадобиться в особых случях,
-когда вам требуется переопределить или даже закрыть стандартный дескриптор,
-но при этом вы хотите продолжать выводить сообщения туда, куда они выводились бы стандартным дескриптором. Подробнее см. Dupstd.
+Logging into a duplicate of standard descriptor might be needed in special
+occasions when you need to redefine or even close standard descriptor but you
+want to continue displaying messages wherever they are displayed by a standard
+descriptor. See more L<Log::Any::Adapter::Dupstd|Log::Any::Adapter::Dupstd>.
 
-Этот адаптер работает аналогично простому адаптеру из дистрибутива Log::Any - 
-Stdout (за исключением того, что внутри используется дубль дескриптора).
+These adapters work similarly to ordinary adapters from distributive Log::Any - 
+L<Stdout|Log::Any::Adapter::Stdout> (save that inside are used descriptor
+duplicate)
 
 
 =head1 SEE ALSO
