@@ -67,7 +67,7 @@
          "web" : "https://github.com/ivanych/Log-Any-Adapter-Dupstd"
       }
    },
-   "version" : "0.02",
+   "version" : "0.03",
    "x_authority" : "cpan:IVANYCH",
    "x_contributors" : [
       "Mikhail Ivanov <m.ivanov@i-free.com>",

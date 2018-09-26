@@ -9,7 +9,7 @@ use strict;
 use warnings;
 use utf8::all;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 #---
 
