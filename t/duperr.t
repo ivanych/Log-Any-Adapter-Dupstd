@@ -3,33 +3,20 @@
 use strict;
 use warnings;
 
-use File::Temp qw(tempfile);
-use POSIX;
-use Scalar::Util qw(openhandle);
-use Test::More tests => 11;
+use Test::More tests => 7;
 
-use Log::Any qw($log);
 use Log::Any::Adapter;
+
+ok(my @stderr_stat = STDERR->stat, 'Get stat for STDERR');
 
 ok( Log::Any::Adapter->set( 'Duperr', log_level => 'info' ), 'Set adapter Duperr' );
 
-ok( openhandle(*STDERR),                             'STDERR is open' );
-ok( print( STDERR "# print stderr before close\n" ), 'Print STDERR before close' );
+ok(my @duperr_stat_1 = $Log::Any::Adapter::Duperr::duperr->stat, 'Get stat for Duperr');
 
-ok( close STDERR, 'close STDERR' );
+is_deeply(\@stderr_stat, \@duperr_stat_1, 'Stat for STDERR eq Duperr after set adapter Duperr');
 
-ok( !openhandle(*STDERR),                            'STDERR is close' );
-ok( !print( STDERR "# print stderr after close\n" ), 'NO print stderr after close' );
+ok( close STDERR, 'Close STDERR' );
 
-ok( my $tmp_fh = tempfile(),      'Open tempfile' );
-ok( my $tmp_fd = fileno($tmp_fh), 'Get tempfile fd' );
-ok( dup2( $tmp_fd, 3 ), 'Duplicate tempfile fd to duperr fd' );
+ok(my @duperr_stat_2 = $Log::Any::Adapter::Duperr::duperr->stat, 'Get stat for Duperr');
 
-my $message = "# print duperr";
-
-ok( $log->warning($message), 'Print Duperr' );
-
-$tmp_fh->seek( 0, 0 );
-my $line = $tmp_fh->getline;
-
-is( $line, "$message\n", 'Duperr message OK' );
+is_deeply(\@stderr_stat, \@duperr_stat_2, 'Stat for STDERR eq Duperr after close STDERR');

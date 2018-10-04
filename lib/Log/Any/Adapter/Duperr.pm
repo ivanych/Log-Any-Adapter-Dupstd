@@ -16,10 +16,8 @@ use base qw/Log::Any::Adapter::Base/;
 
 our $VERSION = '0.03';
 
-#---
-
 # Duplicate STDERR
-open( my $duperr, '>&', STDERR ) or croak "Can't dup STDERR: $!";    ## no critic [InputOutput::RequireBriefOpen]
+open( our $duperr, '>&', STDERR ) or croak "Can't dup STDERR: $!";    ## no critic [InputOutput::RequireBriefOpen]
 
 sub init {
     my ($self) = @_;
