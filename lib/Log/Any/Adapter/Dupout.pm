@@ -16,10 +16,8 @@ use base qw/Log::Any::Adapter::Base/;
 
 our $VERSION = '0.03';
 
-#---
-
 # Duplicate STDOUT
-open( my $dupout, '>&', STDOUT ) or croak "Can't dup STDOUT: $!";    ## no critic [InputOutput::RequireBriefOpen]
+open( our $fh, '>&', STDOUT ) or croak "Can't dup STDOUT: $!";    ## no critic [InputOutput::RequireBriefOpen]
 
 sub init {
     my ($self) = @_;
@@ -45,8 +43,7 @@ foreach my $method ( Log::Any::Adapter::Util::logging_methods() ) {
 
         return if $method_level > $self->{log_level};
 
-        # Message output on $dupout instead of STDOUT
-        print $dupout "$text\n";
+        print $fh "$text\n";
     };
 }
 

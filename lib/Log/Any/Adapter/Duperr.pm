@@ -17,7 +17,7 @@ use base qw/Log::Any::Adapter::Base/;
 our $VERSION = '0.03';
 
 # Duplicate STDERR
-open( our $duperr, '>&', STDERR ) or croak "Can't dup STDERR: $!";    ## no critic [InputOutput::RequireBriefOpen]
+open( our $fh, '>&', STDERR ) or croak "Can't dup STDERR: $!";    ## no critic [InputOutput::RequireBriefOpen]
 
 sub init {
     my ($self) = @_;
@@ -43,8 +43,7 @@ foreach my $method ( Log::Any::Adapter::Util::logging_methods() ) {
 
         return if $method_level > $self->{log_level};
 
-        # Message output on $duperr instead of STDERR
-        print $duperr "$text\n";
+        print $fh "$text\n";
     };
 }
 
