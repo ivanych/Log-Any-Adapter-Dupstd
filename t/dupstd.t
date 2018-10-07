@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Log::Any qw ($log);
 use Test::More tests => 2;
 
 use Log::Any::Adapter;
@@ -27,7 +28,8 @@ sub test_fh {
 
     ok( Log::Any::Adapter->set($adapter), "Set adapter $adapter" );
 
-    my $adapter_fh = ${"Log::Any::Adapter::${adapter}::fh"};
+    # irresponsible penetration into the object
+    my $adapter_fh = $log->{adapter}->{fh};
 
     diag_fh_detail($adapter_fh) if $is_debug;
 

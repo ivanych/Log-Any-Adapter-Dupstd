@@ -16,11 +16,11 @@ use base qw/Log::Any::Adapter::Base/;
 
 our $VERSION = '0.03';
 
-# Duplicate STDERR
-open( our $fh, '>&', STDERR ) or croak "Can't dup STDERR: $!";    ## no critic [InputOutput::RequireBriefOpen]
-
 sub init {
     my ($self) = @_;
+
+    # Duplicate STDERR
+    open( $self->{fh}, '>&', STDERR ) or croak "Can't dup STDERR: $!";    ## no critic [InputOutput::RequireBriefOpen]
 
     if ( exists $self->{log_level} ) {
         $self->{log_level} = Log::Any::Adapter::Util::numeric_level( $self->{log_level} )
@@ -43,7 +43,7 @@ foreach my $method ( Log::Any::Adapter::Util::logging_methods() ) {
 
         return if $method_level > $self->{log_level};
 
-        print $fh "$text\n";
+        $self->{fh}->print("$text\n");
     };
 }
 
