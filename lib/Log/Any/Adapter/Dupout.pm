@@ -22,6 +22,8 @@ sub init {
     # Duplicate STDOUT
     open( $self->{fh}, '>&', STDOUT ) or croak "Can't dup STDOUT: $!";    ## no critic [InputOutput::RequireBriefOpen]
 
+    $self->{fh}->autoflush(1);
+
     if ( exists $self->{log_level} ) {
         $self->{log_level} = Log::Any::Adapter::Util::numeric_level( $self->{log_level} )
             unless $self->{log_level} =~ /^\d+$/x;
