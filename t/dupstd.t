@@ -45,7 +45,7 @@ sub test_fh {
 
     is( $adapter_stat_2[1], $std_stat[1], "Inode $std == $adapter after close $std" );
 
-    is $adapter_fh->autoflush, 1, "\$adpater_fh is autoflushed";
+    is $adapter_fh->autoflush, $adapter eq "Duperr", "\$adpater_fh is autoflushed";
 
     # Restore STD*
     ok(open $std_fh, '>&', $adapter_fh);
