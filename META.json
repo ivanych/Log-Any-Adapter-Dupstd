@@ -4,13 +4,13 @@
       "=over 4"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v3.0.16, CPAN::Meta::Converter version 2.150005",
+   "generated_by" : "Minilla/v3.1.2, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "perl_5"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "Log-Any-Adapter-Dupstd",
    "no_index" : {
@@ -67,12 +67,14 @@
          "web" : "https://github.com/ivanych/Log-Any-Adapter-Dupstd"
       }
    },
-   "version" : "0.04",
+   "version" : "0.05",
    "x_authority" : "cpan:IVANYCH",
    "x_contributors" : [
       "Mikhail Ivanov <m.ivanov@i-free.com>",
       "Mikhail Ivanov <m.ivanych@gmail.com>",
-      "Mohammad S Anwar <mohammad.anwar@yahoo.com>"
+      "Mohammad S Anwar <mohammad.anwar@yahoo.com>",
+      "Yaroslav O. Kosmina <kosmina.yaroslav@220-volt.ru>"
    ],
-   "x_serialization_backend" : "JSON::PP version 2.27300"
+   "x_serialization_backend" : "JSON::PP version 2.97001",
+   "x_static_install" : 1
 }
