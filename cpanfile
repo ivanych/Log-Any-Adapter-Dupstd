@@ -8,4 +8,3 @@ on 'test' => sub {
     requires 'Test::PerlTidy';
 };
 
-requires 'Module::Build::Tiny';
